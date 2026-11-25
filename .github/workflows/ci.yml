@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-check:
+    name: 构建与基础检查
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: JS 语法检查（node --check）
+        run: |
+          set -euo pipefail
+          files="$(git ls-files '*.js')"
+          if [ -z "$files" ]; then
+            echo "没有 JS 文件，跳过"
+            exit 0
+          fi
+          for f in $files; do
+            echo "== node --check $f"
+            node --check "$f"
+          done
+          echo "JS 语法检查通过"
+
+      - name: HTML 本地资源引用检查
+        run: python3 scripts/check_html_refs.py
+
+      - name: 契约版本一致性检查
+        run: python3 scripts/check_contract_version.py
+
+      - name: 占位符残留检查
+        run: python3 scripts/check_no_private_info.py
+
+      - name: Python 脚本语法编译检查
+        run: python3 -m compileall -q scripts tools login/tools
