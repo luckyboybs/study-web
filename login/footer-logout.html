@@ -1,0 +1,36 @@
+<!--
+  学迹 · 页脚「退出」片段
+  ---------------------------------------------------------------
+  用途：主站页脚加一个不显眼的退出入口，GET /logout 由服务端清会话并回登录页。
+
+  接入方法（两处，都在 index.html 里）：
+    1) 在 </footer> 之前插入下面的 HTML；
+    2) 把下面的 CSS 追加到 styles.css 末尾（或内联成 <style>）。
+
+  本片段只新增 .foot-logout 一个类，不改动 .foot / .foot-line / .foot-meta 的既有样式，
+  因此不影响主站其他任何页面的表现。
+-->
+<!-- HTML：插在 index.html 的 <footer class="foot"> 内，</footer> 之前 -->
+<p class="foot-logout"><a href="/logout">退出</a></p>
+
+<!-- CSS：追加到 styles.css 末尾 -->
+<style>
+  .foot-logout {
+    margin: 10px 0 0;
+    font-size: 14px;
+    text-align: right;
+  }
+  .foot-logout a {
+    color: var(--ink-3);
+    text-decoration: none;
+    border-bottom: 1px solid var(--line-2);
+    padding-bottom: 1px;
+    transition: color 150ms cubic-bezier(.2, .6, .2, 1),
+                border-color 150ms cubic-bezier(.2, .6, .2, 1);
+  }
+  .foot-logout a:hover,
+  .foot-logout a:focus-visible {
+    color: var(--seal-ink);
+    border-bottom-color: var(--seal-ink);
+  }
+</style>

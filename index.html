@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>学迹 · 初中学习档案</title>
+<meta name="description" content="学迹——拍下来的题、讲过的题，都在这儿找得回来。家庭私有的初中学习资产查阅端。">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#f4eee3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16130f" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="assets/favicon/favicon-32.png" sizes="32x32">
+<link rel="icon" href="assets/favicon/favicon-16.png" sizes="16x16">
+<link rel="apple-touch-icon" href="assets/favicon/favicon-180.png">
+<link rel="preload" href="assets/fonts/noto-serif-sc-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/noto-serif-sc-600.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+<script>
+/* 主题必须在首屏绘制前定好，避免闪白/闪黑 */
+(function () {
+  try {
+    var t = localStorage.getItem('xueji-theme');
+    if (t !== 'light' && t !== 'dark') {
+      t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#app">跳到主要内容</a>
+
+<header class="topbar">
+  <div class="topbar-row">
+    <a class="brand" href="#/" aria-label="学迹 · 首页">
+      <img class="brand-mark" src="assets/favicon/favicon-64.png" alt="" width="30" height="30">
+      <span class="brand-text">
+        <span class="brand-name">学迹</span>
+        <span class="brand-sub">初中学习档案</span>
+      </span>
+    </a>
+    <button class="theme-btn" id="theme-btn" type="button" aria-pressed="false">
+      <span id="theme-btn-label">夜间</span>
+    </button>
+  </div>
+  <nav class="tabs" id="tabs" aria-label="主导航"></nav>
+</header>
+
+<main id="app" tabindex="-1">
+  <div class="boot">正在读取档案…</div>
+</main>
+
+<footer class="foot">
+  <p class="foot-line" id="foot-tag">拍下来的题、讲过的题，都在这儿找得回来。</p>
+  <p class="foot-meta" id="foot-meta"></p>
+  <p class="foot-logout"><a href="/logout">退出</a></p>
+</footer>
+
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="查看大图">
+  <img id="lightbox-img" alt="">
+  <div class="lb-bar">
+    <button class="lb-btn" id="lb-zoom" type="button">按原图大小看</button>
+    <button class="lb-btn lb-close" id="lb-close" type="button">关闭</button>
+  </div>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+
+<script src="app.js" defer></script>
+</body>
+</html>

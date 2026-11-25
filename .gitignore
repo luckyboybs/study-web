@@ -1,0 +1,26 @@
+# 数据目录：本地生成的样例数据 / 生产侧推送的真实数据，一律不入库
+data/
+
+# 日志与备份
+*.log
+*.bak
+*.bak-*
+.bak-*
+
+# 本地验证产物
+proof/
+playwright-report/
+test-results/
+
+# 依赖与缓存
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 系统杂物
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

@@ -1,0 +1,88 @@
+# ============================================================
+# study.example.com — HTTPS（暂存文件，按需启用）
+#
+# 启用前提：
+#   1. 域名 DNS A 记录已指向你的服务器
+#   2. 证书已签发（本示例按 certbot 的 webroot 方式）
+#
+# 启用步骤：
+#   1. certbot certonly --webroot -d study.example.com \
+#        --webroot-path <WEB_ROOT>
+#      （HTTP conf 中已预留 /.well-known/acme-challenge/ 且 auth_basic off，
+#        校验可直接通过，无需改现有 conf）
+#   2. 把本文件放到你存放站点 conf 的目录，例如 <NGINX_CONF_DIR>/study.example.com.ssl.conf
+#   3. 编辑 HTTP conf：把 listen 80 块的 location / { try_files ... }
+#      改为 return 301 https://$host$request_uri;，仅保留 ACME location
+#      （改前先备份原 conf）
+#   4. nginx -t && systemctl reload nginx
+#
+# 本文件是【部署示例】：文中 <...> 全是占位符。
+#   <WEB_ROOT>        站点根目录
+#   <CERT_DIR>        证书目录（certbot 默认在 /etc/letsencrypt/live/<域名>/）
+#   <AUTH_USER_FILE>  Basic Auth 用户文件路径（切勿提交进仓库）
+# ============================================================
+
+server {
+    listen 443 ssl;
+    server_tokens off;
+    server_name study.example.com;
+
+    ssl_certificate     <CERT_DIR>/fullchain.pem;
+    ssl_certificate_key <CERT_DIR>/privkey.pem;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    root <WEB_ROOT>;
+    index index.html index.htm;
+    autoindex off;
+
+    auth_basic "Study";
+    auth_basic_user_file <AUTH_USER_FILE>;
+
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css text/xml text/javascript application/javascript application/json image/svg+xml;
+
+    location ^~ /.well-known/acme-challenge/ {
+        root <WEB_ROOT>;
+        auth_basic off;
+    }
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # 讲解 md 以纯文本下发（mime.types 无 .md 映射，默认是 octet-stream）
+    location ~* \.md$ {
+        default_type text/plain;
+        charset utf-8;
+    }
+
+    location = /data/index.json {
+        expires -1;
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+    }
+
+    location ~* \.(html)$ {
+        expires -1;
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+    }
+
+    location ~* \.(css|js)$ {
+        expires 5m;
+        add_header Cache-Control "public, must-revalidate";
+    }
+
+    location ~* \.(jpg|jpeg|png|gif|ico|svg|webp)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    location ~ /\. {
+        deny all;
+        access_log off;
+        log_not_found off;
+    }
+}

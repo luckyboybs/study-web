@@ -1,0 +1,335 @@
+/* ============================================================
+   学迹 · 登录页  —  视觉系统
+   与主站 styles.css 同一套纸墨令牌（逐值相同），不引入新色新字。
+   字体自托管，路径根绝对：/assets/fonts/（已确认免认证可达）。
+   本文件在认证前加载，因此完全独立，不依赖主站 styles.css。
+   ============================================================ */
+
+/* ---------- 字体（与主站 styles.css 相同） ---------- */
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/assets/fonts/noto-serif-sc-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/assets/fonts/noto-serif-sc-600.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Noto Serif SC';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/assets/fonts/noto-serif-sc-700.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/assets/fonts/jetbrains-mono-latin.woff2') format('woff2');
+}
+
+/* ---------- 令牌（与主站 styles.css 逐值相同） ---------- */
+:root {
+  --paper:      #f4eee3;
+  --surface:    #fbf8f2;
+  --surface-2:  #efe8da;
+  --ink:        #211e1a;
+  --ink-2:      #5b5449;
+  --ink-3:      #7d7466;
+  --line:       #e2dacb;
+  --line-2:     #cec3ae;
+  --seal:       #9c2b1f;
+  --seal-ink:   #7d2117;
+  --seal-soft:  #f4e4df;
+  --ok:         #3f6b3a;
+  --scrim:      rgba(33, 30, 26, .42);
+
+  --serif: 'Noto Serif SC', 'Songti SC', 'Source Han Serif SC', 'Noto Serif CJK SC', SimSun, serif;
+  --mono:  'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --col: 420px;
+  --pad: 18px;
+  --r: 4px;
+
+  --t: 150ms cubic-bezier(.2, .6, .2, 1);
+}
+
+:root[data-theme='dark'] {
+  --paper:      #16130f;
+  --surface:    #1e1a15;
+  --surface-2:  #272219;
+  --ink:        #eae2d3;
+  --ink-2:      #a99e8b;
+  --ink-3:      #8d8371;
+  --line:       #332c21;
+  --line-2:     #463d2d;
+  --seal:       #d9694f;
+  --seal-ink:   #e58a72;
+  --seal-soft:  #32201a;
+  --ok:         #8fb583;
+  --scrim:      rgba(0, 0, 0, .62);
+}
+
+/* ---------- 基础 ---------- */
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+img { max-width: 100%; }
+a { color: var(--seal-ink); }
+:focus-visible {
+  outline: 2px solid var(--seal);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+::selection { background: var(--seal-soft); color: var(--seal-ink); }
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 200;
+  background: var(--surface);
+  color: var(--ink);
+  padding: 10px 14px;
+  border: 1px solid var(--line-2);
+  font-size: 14px;
+}
+.skip-link:focus { left: 8px; top: 8px; }
+
+/* ---------- 顶部（只放主题切换，位置与主站顶栏一致） ---------- */
+.login-top {
+  width: 100%;
+  max-width: var(--col);
+  margin: 0 auto;
+  padding: 12px var(--pad) 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ---------- 文字按钮（与主站 .theme-btn 同形同义） ---------- */
+.theme-btn {
+  flex: none;
+  font-family: var(--serif);
+  font-size: 14px;
+  color: var(--ink-2);
+  background: transparent;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  padding: 5px 13px;
+  cursor: pointer;
+  transition: color var(--t), border-color var(--t), background var(--t);
+}
+.theme-btn:hover { color: var(--ink); border-color: var(--ink-3); }
+.theme-btn:active { background: var(--surface-2); }
+
+/* ---------- 布局 ---------- */
+.login-wrap {
+  width: 100%;
+  max-width: var(--col);
+  margin: 0 auto;
+  padding: 40px var(--pad) 24px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ---------- 头部：方印 + 字标 ---------- */
+.login-head {
+  text-align: center;
+  margin-bottom: 26px;
+}
+.login-seal {
+  width: 84px;
+  height: 84px;
+  border-radius: 3px;
+  display: block;
+  margin: 0 auto 16px;
+}
+.login-name {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  line-height: 1.2;
+  margin: 0;
+}
+.login-sub {
+  font-size: 13px;
+  color: var(--ink-2);
+  letter-spacing: .14em;
+  margin: 4px 0 0;
+}
+.login-note {
+  font-size: 15px;
+  color: var(--ink-2);
+  margin: 16px 0 0;
+}
+
+/* ---------- 面板 ---------- */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 20px 18px 18px;
+}
+.field-label {
+  display: block;
+  font-size: 14px;
+  color: var(--ink-2);
+  margin: 0 0 8px;
+  letter-spacing: .04em;
+}
+
+/* ---------- 密码输入行 ---------- */
+.pw-row {
+  position: relative;
+  display: block;
+}
+.pw-input {
+  width: 100%;
+  min-width: 0;
+  height: 50px;
+  padding: 0 68px 0 14px;
+  font-family: var(--serif);
+  font-size: 16px;               /* 防 iOS 聚焦时自动放大 */
+  line-height: 1;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  transition: border-color var(--t), box-shadow var(--t);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.pw-input::placeholder { color: var(--ink-3); }
+.pw-input:hover { border-color: var(--ink-3); }
+.pw-input:focus {
+  outline: none;
+  border-color: var(--seal);
+  box-shadow: 0 0 0 2px var(--seal-soft);
+}
+.pw-input[aria-invalid='true'] { border-color: var(--seal); }
+.pw-input:disabled { opacity: .6; cursor: not-allowed; }
+
+.pw-toggle {
+  position: absolute;
+  right: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 36px;
+  min-width: 52px;
+  padding: 0 10px;
+  font-family: var(--serif);
+  font-size: 14px;
+  color: var(--ink-2);
+  background: transparent;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+  cursor: pointer;
+  transition: color var(--t), border-color var(--t), background var(--t);
+}
+.pw-toggle:hover { color: var(--ink); border-color: var(--ink-3); }
+.pw-toggle:active { background: var(--surface-2); }
+
+/* ---------- 主操作 ---------- */
+.submit-btn {
+  width: 100%;
+  height: 50px;
+  margin-top: 14px;
+  font-family: var(--serif);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  color: var(--paper);
+  background: var(--seal);
+  border: 1px solid var(--seal);
+  border-radius: var(--r);
+  cursor: pointer;
+  transition: opacity var(--t), background var(--t);
+}
+.submit-btn:hover { background: var(--seal-ink); border-color: var(--seal-ink); }
+.submit-btn:active { opacity: .9; }
+.submit-btn:disabled {
+  cursor: progress;
+  opacity: .72;
+  background: var(--seal);
+  border-color: var(--seal);
+}
+
+/* ---------- 状态区 ---------- */
+.form-msg {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--seal-ink);
+  background: var(--seal-soft);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r);
+}
+.form-msg:empty { display: none; }
+
+.form-hint {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: var(--ink-3);
+}
+
+/* ---------- 页脚 ---------- */
+.login-foot {
+  width: 100%;
+  max-width: var(--col);
+  margin: 0 auto;
+  padding: 22px var(--pad) calc(22px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+}
+.login-foot-line {
+  font-size: 14px;
+  color: var(--ink-2);
+  margin: 0 0 6px;
+}
+.login-foot-meta {
+  font-size: 13px;
+  color: var(--ink-3);
+  margin: 0;
+  font-family: var(--mono);
+  line-height: 1.9;
+}
+
+/* ---------- 响应式 ---------- */
+@media (min-width: 560px) {
+  :root { --pad: 24px; }
+  .login-wrap { padding-top: 56px; padding-bottom: 32px; }
+  .login-seal { width: 96px; height: 96px; }
+  .login-name { font-size: 27px; }
+  .panel { padding: 24px 22px 20px; }
+}
+
+/* ---------- 动效偏好 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 0ms !important; animation-duration: 0ms !important; }
+}

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>学迹 · 登录</title>
+<meta name="description" content="学迹——家庭私有的初中学习档案。输密码进入。">
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="Cache-Control" content="no-store">
+<meta name="theme-color" content="#f4eee3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#16130f" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/assets/favicon/favicon-32.png" sizes="32x32">
+<link rel="icon" href="/assets/favicon/favicon-16.png" sizes="16x16">
+<link rel="apple-touch-icon" href="/assets/favicon/favicon-180.png">
+<link rel="preload" href="/assets/fonts/noto-serif-sc-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/noto-serif-sc-600.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="login.css">
+<script>
+/* 主题必须在首屏绘制前定好，避免闪白/闪黑。与主站共用同一个键 xueji-theme。
+   这里只读写主题偏好，绝不读写任何凭证。 */
+(function () {
+  try {
+    var t = localStorage.getItem('xueji-theme');
+    if (t !== 'light' && t !== 'dark') {
+      t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+</head>
+<body>
+<a class="skip-link" href="#pw">跳到密码输入</a>
+
+<div class="login-top">
+  <button class="theme-btn" id="theme-btn" type="button" aria-pressed="false">
+    <span id="theme-btn-label">夜间</span>
+  </button>
+</div>
+
+<main class="login-wrap">
+  <div class="login-head">
+    <img class="login-seal" src="/assets/favicon/favicon-180.png" alt="" width="84" height="84">
+    <h1 class="login-name">学迹</h1>
+    <p class="login-sub">家庭学习档案</p>
+    <p class="login-note">家庭私有，只有家里人能进。</p>
+  </div>
+
+  <form class="panel" id="login-form" action="/login" method="post"
+        enctype="application/x-www-form-urlencoded" novalidate>
+    <label class="field-label" for="pw">密码</label>
+    <span class="pw-row">
+      <input class="pw-input" id="pw" name="password" type="password"
+             autocomplete="current-password" placeholder="家里人的密码" required
+             autocapitalize="off" autocorrect="off" spellcheck="false"
+             enterkeyhint="go" autofocus aria-describedby="form-msg">
+      <button class="pw-toggle" id="pw-toggle" type="button" aria-pressed="false">显示</button>
+    </span>
+    <button class="submit-btn" id="submit-btn" type="submit">进入</button>
+    <p class="form-msg" id="form-msg" role="alert"></p>
+  </form>
+</main>
+
+<footer class="login-foot">
+  <p class="login-foot-line">拍下来的题、讲过的题，都在这儿找得回来。</p>
+  <p class="login-foot-meta">study.example.com</p>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var $form   = document.getElementById('login-form');
+  var $pw     = document.getElementById('pw');
+  var $toggle = document.getElementById('pw-toggle');
+  var $btn    = document.getElementById('submit-btn');
+  var $msg    = document.getElementById('form-msg');
+
+  var busy = false;
+
+  /* ---------- 主题（与主站同一套按钮语法，共用一个 localStorage 键） ---------- */
+  var $themeBtn   = document.getElementById('theme-btn');
+  var $themeLabel = document.getElementById('theme-btn-label');
+
+  function applyTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    $themeLabel.textContent = t === 'dark' ? '日间' : '夜间';
+    $themeBtn.setAttribute('aria-pressed', t === 'dark' ? 'true' : 'false');
+  }
+  applyTheme(document.documentElement.getAttribute('data-theme') || 'light');
+
+  $themeBtn.addEventListener('click', function () {
+    var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    try { localStorage.setItem('xueji-theme', next); } catch (e) { /* 隐私模式下忽略 */ }
+  });
+
+  /* ---------- 表单 ---------- */
+  function setMsg(text) { $msg.textContent = text || ''; }
+
+  function fail(text, clearPw) {
+    setMsg(text);
+    $pw.setAttribute('aria-invalid', 'true');
+    if (clearPw) { $pw.value = ''; }
+    $pw.focus();
+  }
+
+  function resetBusy() {
+    busy = false;
+    $btn.disabled = false;
+    $btn.textContent = '进入';
+    $form.removeAttribute('aria-busy');
+  }
+
+  /* 输入即清除错误态 */
+  $pw.addEventListener('input', function () {
+    if ($msg.textContent) { setMsg(''); }
+    if ($pw.getAttribute('aria-invalid') === 'true') {
+      $pw.removeAttribute('aria-invalid');
+    }
+  });
+
+  /* 显示 / 隐藏明文 */
+  $toggle.addEventListener('click', function () {
+    var nowText = $pw.type === 'text';
+    var start = $pw.selectionStart, end = $pw.selectionEnd;
+    $pw.type = nowText ? 'password' : 'text';
+    $toggle.textContent = nowText ? '显示' : '隐藏';
+    $toggle.setAttribute('aria-pressed', nowText ? 'false' : 'true');
+    $pw.focus();
+    try { $pw.setSelectionRange(start, end); } catch (e) { /* type=password 下忽略 */ }
+  });
+
+  $form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (busy) { return; }
+
+    var pw = $pw.value;
+
+    /* 空态 */
+    if (!pw) {
+      fail('先输入密码。', false);
+      return;
+    }
+
+    busy = true;
+    $btn.disabled = true;
+    $btn.textContent = '正在进入…';
+    $form.setAttribute('aria-busy', 'true');
+    $pw.removeAttribute('aria-invalid');
+    setMsg('');
+
+    var landed = false;
+    try {
+      var res = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ password: pw }).toString(),
+        credentials: 'same-origin',
+        cache: 'no-store'
+      });
+
+      if (res.ok) {
+        landed = true;
+        location.href = '/';
+        return;
+      }
+      if (res.status === 401) {
+        fail('密码不对，再试一次。', true);
+      } else if (res.status === 429) {
+        fail('试得太多了，歇一会儿再来。', false);
+      } else {
+        fail('服务出错了，稍后再试。', false);
+      }
+    } catch (err) {
+      fail('连不上，稍后再试。', false);
+    } finally {
+      if (!landed) { resetBusy(); }
+    }
+  });
+})();
+</script>
+</body>
+</html>
