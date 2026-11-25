@@ -99,6 +99,7 @@ study-web/
 │   ├── verify.py             功能断言 + 截图（Playwright）
 │   └── build_fonts.py        重新生成 assets/fonts/ 下的字体子集
 ├── scripts/                  检查脚本（HTML 引用 / 契约版本 / 占位符残留，本地可一键复跑）
+├── .github/workflows/ci.yml  GitHub Actions：push / PR 自动跑上述检查 + Python 编译检查
 ├── study_web_contract.md     数据契约（index.json schema 与契约版本规则）
 ├── CHANGELOG.md              版本变更记录（版本号 + 变更描述）
 ├── TESTING.md                自测清单（改版后逐条过）
@@ -140,16 +141,17 @@ study-web/
 3. `scripts/check_contract_version.py` 校验契约版本与前端声明一致；
 4. `scripts/check_no_private_info.py` 扫描真实域名/IP/服务器路径等占位符残留（防回归）。
 
-本地一键复跑：
+本地一键复跑（与 CI 完全同口径）：
 
 ```bash
 python3 scripts/check_html_refs.py
 python3 scripts/check_contract_version.py
 python3 scripts/check_no_private_info.py
+python3 -m compileall -q scripts tools login/tools
 for f in $(git ls-files '*.js'); do node --check "$f"; done
 ```
 
-> 仓库另备一份跑同样四项检查的 GitHub Actions 配置（`.github/workflows/ci.yml`），因当前推送令牌缺少 workflow scope，该文件暂未随仓库跟踪；需要时改用有 workflow 权限的令牌推送即可生效。
+本仓库的 CI 即 `.github/workflows/ci.yml`：push 到 main 或提 PR 时自动运行上述检查（另加一步 Python 脚本语法编译检查），也可在 Actions 页面手动触发（Run workflow）。
 
 ## 隐私说明
 
@@ -161,6 +163,6 @@ for f in $(git ls-files '*.js'); do node --check "$f"; done
 
 ## License
 
-[MIT](LICENSE) © 2026 bloody
+[MIT](LICENSE) © 2026 luckyboybs
 
 自托管字体为 SIL OFL 1.1 授权（见 `tools/build_fonts.py` 头部说明）。

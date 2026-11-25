@@ -6,6 +6,13 @@
 
 ---
 
+## [v1.6.4] - 2026-11-25 · LICENSE 版权署名改用 GitHub 用户名 + README 检查脚本描述对齐实际
+
+- 改了什么：
+  1. `LICENSE` 与 `README.md` 的版权署名改为 GitHub 用户名 `luckyboybs`（原署名为站点名拼音，已全部替换）；全仓库再无原署名残留。
+  2. `README.md`「检查脚本」章节：末尾过期描述（「GitHub Actions 配置未随仓库跟踪」）改为如实说法——CI 即 `.github/workflows/ci.yml`，push 到 main 或提 PR 时自动运行，Actions 页面可手动触发；本地一键复跑块补上 compileall，与 CI 五步完全同口径；目录结构树补回 `.github/workflows/ci.yml` 一行（该文件已于同日入库）。`TESTING.md` 的隐私回归条目同步注明 CI 会跑。
+- 契约版本：v1.5（不变）。
+
 ## [v1.6.3] - 2026-11-25 · 脱敏收口：文档真实统计泛化 + mock 密码哨兵替换 + README 与仓库实际对齐
 
 - 改了什么：
