@@ -163,13 +163,13 @@ def run(port, base, url):
         page.screenshot(path=os.path.join(PROOF, 'login-01-light.png'), full_page=True)
 
         # ---------- 2. 明文切换 ----------
-        page.fill('#pw', 'home-secret')
+        page.fill('#pw', 'test-password-not-real')
         page.click('#pw-toggle')
         check('点「显示」后输入框变 text',
               page.get_attribute('#pw', 'type') == 'text')
         check('按钮文字变成「隐藏」', page.locator('#pw-toggle').inner_text() == '隐藏')
         check('aria-pressed=true', page.get_attribute('#pw-toggle', 'aria-pressed') == 'true')
-        check('密码值未被截断', page.input_value('#pw') == 'home-secret')
+        check('密码值未被截断', page.input_value('#pw') == 'test-password-not-real')
         page.screenshot(path=os.path.join(PROOF, 'login-04-reveal.png'), full_page=True)
         page.click('#pw-toggle')
         check('再点切回 password', page.get_attribute('#pw', 'type') == 'password')
@@ -318,9 +318,11 @@ def run(port, base, url):
         keys = page.evaluate('Object.keys(localStorage)')
         check('localStorage 只有主题键，没有别的', keys == ['xueji-theme'], keys)
         vals = ' '.join(page.evaluate('Object.values(localStorage)'))
-        check('localStorage 不含密码', 'home-secret' not in vals and 'xueji' not in vals)
+        check('localStorage 不含密码',
+              'test-password-not-real' not in vals
+              and 'mock-only-not-a-real-password' not in vals)
         check('页面没有任何密码回显到 DOM',
-              'home-secret' not in page.content())
+              'test-password-not-real' not in page.content())
 
         # ---------- 12. Enter 提交 ----------
         page.fill('#pw', 'enter-key')
@@ -360,7 +362,7 @@ def run(port, base, url):
                 '（这里是主站内容区，退出片段只出现在页脚）</p></main>'
                 '<footer class="foot">'
                 '<p class="foot-line" id="foot-tag">拍下来的题、讲过的题，都在这儿找得回来。</p>'
-                '<p class="foot-meta" id="foot-meta">数据更新于 10月25日 15:48 · 契约 v1</p>'
+                '<p class="foot-meta" id="foot-meta">数据更新于 <生成时间> · 契约 v1</p>'
                 '<p class="foot-logout"><a href="/logout">退出</a></p>'
                 '</footer></body></html>')
         try:

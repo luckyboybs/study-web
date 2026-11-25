@@ -122,14 +122,14 @@ python3 login/tools/mock_login_server.py 8902
 
 | 输入 | 服务端行为 |
 | --- | --- |
-| `xueji` | 200 + 种 cookie，跳 `/` |
+| `mock-only-not-a-real-password` | 200 + 种 cookie，跳 `/` |
 | `slow` | 延迟 1.6s 后 200（看 loading 态） |
 | 其他任意 | 401 |
 | `flood` | 429 |
 | `boom` | 500 |
 | `drop` | 直接断开连接（真实网络错误） |
 
-> 注：`xueji` 行中 mock 为简化返回 `200`，生产为 `302`，差异仅对原生客户端有意义（网页端 fetch 跟随重定向，无感）——**不要改 mock 本身**（79 项断言建立在现行为上）。
+> 注：`mock-only-not-a-real-password` 行中 mock 为简化返回 `200`，生产为 `302`，差异仅对原生客户端有意义（网页端 fetch 跟随重定向，无感）——**不要改 mock 本身**（79 项断言建立在现行为上）。
 
 ## 6. 已知限制
 

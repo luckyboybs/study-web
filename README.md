@@ -43,6 +43,9 @@ cd study-web
 # 1. 生成本地合成样例数据（只需一次；data/ 已存在则跳过）
 python3 tools/gen_sample.py
 #    依赖：Pillow（python3 -m pip install Pillow）
+#    另需本机任一款可渲染中文的字体：脚本按常见路径依次探测（文泉驿正黑/微黑、
+#    Droid Sans Fallback、Noto CJK 等，也覆盖 macOS / Windows 位置）；全部找不到时
+#    会报错并提示去改 tools/gen_sample.py 顶部的 FONT_CANDIDATES。
 
 # 2. 起静态服务
 python3 -m http.server 8901
@@ -95,8 +98,7 @@ study-web/
 │   ├── gen_sample.py         生成本地合成样例数据 → data/
 │   ├── verify.py             功能断言 + 截图（Playwright）
 │   └── build_fonts.py        重新生成 assets/fonts/ 下的字体子集
-├── scripts/                  CI 检查脚本（HTML 引用 / 契约版本 / 占位符残留）
-├── .github/workflows/ci.yml  GitHub Actions：构建与基础检查
+├── scripts/                  检查脚本（HTML 引用 / 契约版本 / 占位符残留，本地可一键复跑）
 ├── study_web_contract.md     数据契约（index.json schema 与契约版本规则）
 ├── CHANGELOG.md              版本变更记录（版本号 + 变更描述）
 ├── TESTING.md                自测清单（改版后逐条过）
@@ -113,7 +115,7 @@ study-web/
 - 小版本只加可选字段（消费方缺失时降级容忍）；大版本（删字段/改语义）必须附迁移步骤。
 - 需要新字段时**先在契约里定稿**，再动数据生产侧与前端，不要顺手改。
 
-CI 会跑 `scripts/check_contract_version.py`：从契约头部版本块读出契约版本，与 `app.js` 声明的期望版本比对，不一致则构建失败。
+`scripts/check_contract_version.py` 从契约头部版本块读出契约版本，与 `app.js` 声明的期望版本比对，不一致则检查失败。
 
 ## 部署
 
@@ -127,11 +129,11 @@ CI 会跑 `scripts/check_contract_version.py`：从契约头部版本块读出�
 2. `data/index.json` 建议禁缓存（同步后刷新即见）。
 3. 讲解 md 建议以纯文本下发（部分服务器默认按 octet-stream 处理 `.md`）。
 4. 认证方式自选：Basic Auth、反代 + 会话校验、或内网裸奔均可；本仓库不含任何认证实现细节，`login/` 只提供页面与本地 mock。
-5. **部署前把示例配置里的占位符全部替换掉**，并确认 `data/` 没有被一起提交（CI 的占位符残留检查会盯住域名/IP 之类的真实基础设施信息）。
+5. **部署前把示例配置里的占位符全部替换掉**，并确认 `data/` 没有被一起提交（`scripts/check_no_private_info.py` 会盯住域名/IP 之类的真实基础设施信息）。
 
-## CI
+## 检查脚本
 
-`.github/workflows/ci.yml` 只做**构建与基础检查**（无部署、无隐私扫描之外的额外步骤）：
+所有检查都在 `scripts/` 下，纯本地可复跑（无部署、无额外步骤）：
 
 1. `node --check` 对所有 JS 文件做语法检查；
 2. `scripts/check_html_refs.py` 校验 `index.html` / `login/login.html` 引用的本地资源文件都存在；
@@ -147,13 +149,15 @@ python3 scripts/check_no_private_info.py
 for f in $(git ls-files '*.js'); do node --check "$f"; done
 ```
 
+> 仓库另备一份跑同样四项检查的 GitHub Actions 配置（`.github/workflows/ci.yml`），因当前推送令牌缺少 workflow scope，该文件暂未随仓库跟踪；需要时改用有 workflow 权限的令牌推送即可生效。
+
 ## 隐私说明
 
 本仓库是**脱敏后**的开源版本：
 
 - 不含任何真实学生数据：`data/`（index.json、错题图片、讲解、积累册、切题产物）整体不入库，由 `tools/gen_sample.py` 本地生成合成样例。
 - 不含任何真实基础设施信息：域名、服务器 IP、ssh 别名、部署路径、认证参数在文档与示例配置中一律是占位符。
-- CI 的占位符残留检查会在每次构建时扫描这些模式，防止真实信息被重新引入。
+- `scripts/check_no_private_info.py` 会扫描这些模式，防止真实信息被重新引入。
 
 ## License
 

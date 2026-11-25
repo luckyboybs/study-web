@@ -7,6 +7,7 @@
 
 用法：python3 tools/gen_sample.py   （在仓库根目录下执行）
 输出：data/（index.json + explanations/ + error-images/ + thumbs/ + incoming/crop/ + accum-book/ + plots）
+依赖：Pillow，以及本机任一款可渲染中文的字体（默认按常见路径探测，见下方 FONT_CANDIDATES）
 """
 import json
 import os
@@ -16,8 +17,39 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data"))
 
-FONT = "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc"
+# 中文字体候选路径：按顺序探测，第一个存在的即用（样例图只需要能渲染中文的任一字体）。
+# 全部找不到时脚本带着这份清单报错退出；把本机任一中文 ttf / ttc / otf 的绝对路径
+# 加进来（或直接改写解析结果 FONT）即可。
+FONT_CANDIDATES = [
+    "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",
+    "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc",
+    "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf",
+    "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+    "/usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc",
+    "/usr/share/fonts/noto-cjk/NotoSansCJK-Regular.ttc",
+    "/usr/share/fonts/wenquanyi/wqy-zenhei/wqy-zenhei.ttc",
+    "/System/Library/Fonts/PingFang.ttc",
+    "/Library/Fonts/Songti.ttc",
+    "C:/Windows/Fonts/msyh.ttc",
+    "C:/Windows/Fonts/simhei.ttf",
+]
 SAMPLE_MARK = "样例数据 SAMPLE · 非真实"
+
+
+def resolve_font():
+    """按 FONT_CANDIDATES 顺序探测第一个存在的中文字体文件。"""
+    for path in FONT_CANDIDATES:
+        if os.path.isfile(path):
+            return path
+    raise SystemExit(
+        "找不到可用的中文字体，无法生成本地样例图片。\n"
+        "已按顺序探测以下路径，均不存在：\n  %s\n"
+        "解决办法：编辑本脚本顶部的 FONT_CANDIDATES，把本机任一中文字体文件的\n"
+        "绝对路径加进去（或直接改写解析结果 FONT），然后重跑。"
+        % "\n  ".join(FONT_CANDIDATES))
+
+
+FONT = resolve_font()
 
 
 def font(size):
@@ -374,11 +406,11 @@ def build_explanations(questions):
         for ver in q["explanation_versions"]:
             fname = "%d-%s.md" % (qid, ver)
             gen_at = q["created_at"].replace(" ", "T") + "Z"
-            wc = 637 if ver == "v1" else 712
+            wc = 300 if ver == "v1" else 320
             kd = KADIAN.get((qid, ver))
             kadian_block = "🎯 卡点\n%s\n\n" % kd if kd else ""
             if ver == "v1":
-                body = """<!-- 条目 id: {id} | 版本: v1 | 生成时间: {gen} | 模型: step-3.7-flash -->
+                body = """<!-- 条目 id: {id} | 版本: v1 | 生成时间: {gen} | 模型: sample-model -->
 <!-- 📎 转录未校验(ocr_verified=0, confidence="models_divergent_or_degraded") -->
 # 第 {id} 题 · {subj} · {kp}
 {kadian_block}
@@ -400,10 +432,10 @@ def build_explanations(questions):
 - 易错：只看数值大小，不看过程的方向性；
 - 易错：单位不统一就代入公式。
 
-**元信息**：id={id} · 学科={subj} · 年级=初三 · 版本=v1 · 字数={wc} · 耗时=51.1s
+**元信息**：id={id} · 学科={subj} · 年级=初三 · 版本=v1 · 字数={wc} · 耗时=12.0s
 """.format(id=qid, subj=subj, kp=kp_line, kp0=kp0, gen=gen_at, wc=wc, kadian_block=kadian_block)
             else:
-                body = """<!-- 条目 id: {id} | 版本: v2 | 生成时间: {gen} | 模型: step-3.7-flash -->
+                body = """<!-- 条目 id: {id} | 版本: v2 | 生成时间: {gen} | 模型: sample-model -->
 <!-- ✅ 转录已校验(ocr_verified=1, confidence="both_models_consistent") -->
 # 第 {id} 题 · {subj} · {kp}（重讲版）
 {kadian_block}
@@ -425,7 +457,7 @@ def build_explanations(questions):
 - 易错：把"有时成立"当成"恒成立"；
 - 易错：反例不完整，只验证了一种情况。
 
-**元信息**：id={id} · 学科={subj} · 年级=初三 · 版本=v2 · 字数={wc} · 耗时=63.8s
+**元信息**：id={id} · 学科={subj} · 年级=初三 · 版本=v2 · 字数={wc} · 耗时=12.0s
 """.format(id=qid, subj=subj, kp=kp_line, kp0=kp0, gen=gen_at, wc=wc, kadian_block=kadian_block)
             path = os.path.join(ROOT, "explanations", fname)
             os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -436,7 +468,7 @@ def build_explanations(questions):
                 "version": ver,
                 "file": "explanations/%s" % fname,
                 "generated_at": gen_at,
-                "model": "step-3.7-flash",
+                "model": "sample-model",
                 "word_count": wc,
             }
             if kd:

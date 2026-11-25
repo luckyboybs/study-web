@@ -6,6 +6,15 @@
 
 ---
 
+## [v1.6.3] - 2026-11-25 · 脱敏收口：文档真实统计泛化 + mock 密码哨兵替换 + README 与仓库实际对齐
+
+- 改了什么：
+  1. `DESIGN-BRIEF.md` / `ANTI-SLOP-CHECK.md`：把指向真实生产规模与溯源的数字（题数、讲解篇数、切图张数、字数、耗时、生成时间、模型名、会话 id、知识点条数）全部换成明显虚构的值或占位符，与 README「不含任何真实学生数据」的自述一致。
+  2. `login/`：mock 服务端与验证脚本里的密码哨兵换成 `mock-only-not-a-real-password` / `test-password-not-real`（原值为站点名拼音与一处通用占位词，已全部替换）；`login/README.md` 与 `TESTING.md` 的哨兵表同步更新。
+  3. `README.md`：「CI」章节改为「检查脚本」的如实说法（检查脚本都在 `scripts/` 下、本地一键复跑；GitHub Actions 配置未随仓库跟踪），目录树移除未入库的 `.github/workflows/ci.yml`；本地运行补中文字体依赖说明。
+  4. `tools/gen_sample.py`：字体路径改为多候选探测（覆盖 Linux / macOS / Windows 常见位置），全部找不到时给出清晰报错并提示改 `FONT_CANDIDATES`；`gen_sample.py` 与 `tools/verify.py` 的样例模型名、字数、耗时同步泛化。
+- 契约版本：v1.5（不变）。
+
 ## [v1.6.2] - 2026-11-24 · 修 390px 视口「附图降位说明框」横向溢出
 
 - 改了什么：`styles.css` 的 `.img-missing` 规则新增 `overflow-wrap: anywhere;`（该规则唯一改动）。图片加载失败时降位说明框里的长路径 token 在 390px 窄屏下会撑破布局，此后按不断行文本处理，桌面宽屏无视觉变化。

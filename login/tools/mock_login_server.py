@@ -9,7 +9,7 @@
 都以与线上一致的根绝对路径可达。
 
 密码哨兵（在密码框里原样输入即可触发对应分支）：
-  xueji  -> 200 + Set-Cookie，随后 / 可访问（成功路径）
+  mock-only-not-a-real-password -> 200 + Set-Cookie，随后 / 可访问（成功路径）
   slow   -> 200，但延迟 1.6s（loading 态）
   其他   -> 401
   flood  -> 429
@@ -25,7 +25,7 @@ import urllib.parse
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."))
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8902
-OK_PASSWORD = 'xueji'
+OK_PASSWORD = 'mock-only-not-a-real-password'
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):

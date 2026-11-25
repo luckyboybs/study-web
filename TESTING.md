@@ -62,7 +62,7 @@ python3 tools/verify.py
 # 缺失：删掉该字段 → 不应出现提示条
 ```
 
-## 6. 前端三件套与 CI 检查
+## 6. 前端三件套与检查脚本
 
 ```bash
 # JS 语法
@@ -88,7 +88,7 @@ python3 login/tools/verify_login.py 8902
 # 打开 http://127.0.0.1:8902/login/login.html
 ```
 
-预期：断言全过。密码哨兵：`xueji` 成功路径、`slow` loading 态、其他 401、`flood` 429、
+预期：断言全过。密码哨兵：`mock-only-not-a-real-password` 成功路径、`slow` loading 态、其他 401、`flood` 429、
 `boom` 500、`drop` 网络错误。
 
 ## 8. 字体与 favicon 可达
@@ -107,7 +107,7 @@ python3 scripts/check_no_private_info.py
 ```
 
 预期：退出码 0、零命中。该脚本扫描源码里是否残留真实域名、服务器 IP、ssh 别名、
-本机 / 服务器绝对路径、认证服务与文件关键字等（防回归，CI 每次构建都会跑）。
+本机 / 服务器绝对路径、认证服务与文件关键字等（防回归，本地可随时复跑）。
 
 ## 10. 提交前自查
 

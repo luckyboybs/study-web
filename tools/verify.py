@@ -123,19 +123,19 @@ def build_rich_fixture(base):
     for i in range(27):
         explanations.append({"id": explained[i % 102], "version": "v1",
                              "file": "explanations/%d-v1.md" % explained[i % 102],
-                             "generated_at": "2026-10-23T21:00:00Z", "model": "step-3.7-flash",
-                             "word_count": 637})
+                             "generated_at": "2026-10-23T21:00:00Z", "model": "sample-model",
+                             "word_count": 300})
     for i in range(102):
         explanations.append({"id": explained[i], "version": "v1",
                              "file": "explanations/%d-v1.md" % explained[i],
-                             "generated_at": "2026-10-24T20:00:00Z", "model": "step-3.7-flash",
-                             "word_count": 637})
+                             "generated_at": "2026-10-24T20:00:00Z", "model": "sample-model",
+                             "word_count": 300})
     for qid_t in tail_ids:
         for ver in ("v1", "v2"):
             explanations.append({"id": qid_t, "version": ver,
                                  "file": "explanations/%d-%s.md" % (qid_t, ver),
-                                 "generated_at": "2026-10-30T21:30:00Z", "model": "step-3.7-flash",
-                                 "word_count": 712,
+                                 "generated_at": "2026-10-30T21:30:00Z", "model": "sample-model",
+                                 "word_count": 320,
                                  "summary": "富样例重讲解摘要（%d %s）。" % (qid_t, ver)})
     fixture = dict(base)
     fixture.update({
